@@ -1,0 +1,23 @@
+name: chest-xray-classifier
+
+conda_env: conda_env.yml
+
+entry_points:
+  train_vgg:
+    parameters:
+      data_dir: {type: str}
+      epochs: {type: int, default: 25}
+      freeze: {type: bool, default: False}
+    command: "python src/train/vgg_16.py --data_dir {data_dir} --epochs {epochs} --freeze {freeze}"
+
+  train_resnet:
+    parameters:
+      data_dir: {type: str}
+      epochs: {type: int, default: 25}
+      freeze: {type: bool, default: False}
+    command: "python src/train/resnet_18.py --data_dir {data_dir} --epochs {epochs} --freeze {freeze}"
+
+  preprocess:
+    parameters:
+      data_dir: {type: str}
+    command: "python src/preprocess.py --data_dir {data_dir}"

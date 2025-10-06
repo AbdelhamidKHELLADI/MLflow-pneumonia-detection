@@ -1,0 +1,14 @@
+name: chestxray_env
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.11
+  - pytorch=2.5.1
+  - torchvision=0.20.1
+  - torchaudio=2.5.1
+  - pytorch-cuda=12.4  # for GPU; remove if CPU only
+  - pip
+  - pip:
+      - -r requirements.txt
