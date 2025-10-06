@@ -5,5 +5,5 @@ mlruns/
 __pycache__/
 .env
 Makefile
-conda_env_yaml_full.yml
+conda_env_full.yml
 .env
