@@ -4,9 +4,12 @@ import mlflow.pyfunc
 import pandas as pd
 import tempfile
 from PIL import Image
-import click
+import os
+MODEL_PATH = os.getenv("MODEL_PATH", "models/resnet18_mlflow")
+
+
 @st.cache_resource
-def load_model(model_path="models/resnet18_mlflow"):
+def load_model(model_path=MODEL_PATH):
     model = mlflow.pyfunc.load_model(model_path)
     return model
 
