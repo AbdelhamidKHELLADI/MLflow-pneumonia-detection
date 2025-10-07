@@ -6,7 +6,7 @@ import tempfile
 from PIL import Image
 import click
 @st.cache_resource
-def load_model(model_path="models/final_resnet18_mlflow"):
+def load_model(model_path="models/resnet18_mlflow"):
     model = mlflow.pyfunc.load_model(model_path)
     return model
 

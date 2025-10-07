@@ -28,15 +28,20 @@ def main(data_dir, epochs, freeze):
     model = create_resnet18(num_classes, device,freeze_features=freeze)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
-    with mlflow.start_run(run_name="ResNet_finetune_full"):
+    name="ResNet_finetune_full" if freeze else "ResNet_finetune" 
+    with mlflow.start_run(run_name=name):
         mlflow.log_param("model", "ResNet18")
         mlflow.log_param("finetune_only_last", freeze)
 
         trained_model = train_model(model, train_loader, test_loader, criterion, optimizer, device, num_epochs=epochs)
         test_model(trained_model, val_loader, device)
-
-        torch.save(trained_model.state_dict(), "models/final_resnet18.pth")
-        mlflow.log_artifact("models/final_resnet18.pth")
+        if freeze:
+            model_path="models/resnet18_freeze.pth"
+        else:
+            model_path="models/resnet18.pth"
+        os.makedirs("models",exist_ok=True)
+        torch.save(trained_model.state_dict(), model_path)
+        mlflow.log_artifact(model_path)
         print("Training complete and model saved.")
 
         example_inputs, _ = next(iter(val_loader))
@@ -55,9 +60,10 @@ def main(data_dir, epochs, freeze):
             signature=signature,
             input_example=example_inputs[0].cpu().numpy()
         )
+        mlflow_model_base = model_path.replace(".pth", "_mlflow_base")
+        mlflow_model_pyfunc = model_path.replace(".pth", "_mlflow")
 
-
-        mlflow.pytorch.save_model(trained_model, "models/final_resnet18_mlflow_base")
+        mlflow.pytorch.save_model(trained_model, mlflow_model_base)
 
         
         input_schema = Schema([ColSpec("string", "image_path")])
@@ -65,12 +71,11 @@ def main(data_dir, epochs, freeze):
         pyfunc_signature = ModelSignature(inputs=input_schema, outputs=output_schema)
 
         mlflow.pyfunc.save_model(
-            path="models/final_resnet18_mlflow",
+            path=mlflow_model_pyfunc,
             python_model=ChestXrayModel(),
-            artifacts={"pytorch_model": "models/final_resnet18_mlflow_base"},  
+            artifacts={"pytorch_model": mlflow_model_base},  
             signature=pyfunc_signature
         )
-
 
         print("Model saved with preprocessing and logged to MLflow.")
 
