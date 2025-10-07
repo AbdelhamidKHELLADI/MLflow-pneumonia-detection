@@ -5,6 +5,10 @@
 This project implements a deep learning pipeline for classifying chest X-ray images into Normal or Pneumonia categories.
 It is built using PyTorch, MLflow, and Streamlit.
 
+⚠️ **Disclaimer**:  
+This project is for **research and educational purposes only**.  
+It is **not validated for medical diagnosis** and must not be used as a substitute for professional healthcare advice.  
+
 ## Key features:
 
 **Preprocessing pipeline** (contrast stretching for image enhancement)
@@ -93,18 +97,25 @@ mlflow run . -e train_resnet \
   -P epochs=25 \
   -P freeze=True
 ```
+* `--freeze` explication:  
 
-These commands:
-* Train and evaluate the model
-* Log metrics, parameters, and artifacts to MLflow
-* Save models to the models/ directory
+| Option  | Description                                                                  |
+| :------ | :--------------------------------------------------------------------------- |
+| `True`  | Freeze pretrained layers (only train classifier). Faster, less overfitting.  |
+| `False` | Train all layers (full fine-tuning). Slower, more accurate with enough data. |
+
+* These commands:
+  * Train and evaluate the model
+  * Log metrics, parameters, and artifacts to MLflow
+  * Save models to the models/ directory
 
 ## 💻 5. Launch the Streamlit App
 
 Once a model is trained and saved, you can run the Streamlit web interface for predictions:
 
 ```bash
-export PYTHONPATH=. 
+export PYTHONPATH=$(pwd)
+export MODEL_PATH=/exp/path/to/models/resnet18  # optional: set custom model for inference
 streamlit run src/streamlit_app.py
 ```
 
@@ -114,9 +125,6 @@ Then open your browser at:
 Upload a chest X-ray image (.jpg, .jpeg, .png) and get predictions for:
 
 NORMAL or PNEUMONIA
-
-##⚠️ Disclaimer:
-This is a research prototype. It is **not approved for clinical use and should not replace professional medical diagnosis**.
 
 ## Example Workflow
 
